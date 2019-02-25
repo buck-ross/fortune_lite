@@ -1,0 +1,99 @@
+#!/usr/bin/python
+"""
+Define the official CLI interface to the fortune-lite python module
+
+Copyright 2019 Haximilian
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+# Import dependencies:
+from argparse import ArgumentParser
+from os import getenv
+from os.path import dirname, expanduser, isfile, join
+import time
+import fortune_lite
+
+# Define configuration options for the larger program:
+PARSER = ArgumentParser(description="A Python-based fortune cookie generator",
+                        prog="fortune")
+PARSER.add_argument("-v", "--version", action="version", version="Fortune-Lite"
+                    + " 1.0.0", help="Prints out the version information and "
+                    + "exits the program.")
+PARSER.add_argument("-a", "--all", action="store_true", help="Selects from all"
+                    + " databases, including offensive fortunes.")
+PARSER.add_argument("-e", "--equal", action="store_true", help="Makes it "
+                    + "equally likely that the fortune will be selected from "
+                    + "any given category, as opposed to making all fortunes "
+                    + "equally likely regardless of category.")
+PARSER.add_argument("-f", "--categories", action="store_true", help="Instead "
+                    + "of printing a fortune, just print a list of all fortune"
+                    + " categories (files).")
+PARSER.add_argument("-o", "--offensive", action="store_true", help="Only print"
+                    + " fortunes marked as offensive.")
+PARSER.add_argument("-w", "--wait", type=int, help="Wait the specified number "
+                    + "of seconds after printing the fortune before exiting.")
+
+# Parse the provided arguments:
+ARGS = PARSER.parse_args()
+
+# Get a handle to the database connection:
+DB = getenv("FORTUNE_DB")
+if (not DB) or (not isfile(DB)):
+    DB = expanduser("~/.fortune.db")
+if not isfile(DB):
+    DB = join(dirname(fortune_lite.__file__), "fortune.db")
+CONN = fortune_lite.get_connection(DB)
+
+
+# Define a function to exit the program:
+def run_exit():
+    """
+    Gracefully exits the program.
+    """
+    fortune_lite.close_connection(CONN)
+    if ARGS.wait:
+        time.sleep(ARGS.wait)
+    exit()
+
+# Deal with requests to list categories:
+if ARGS.categories:
+    if ARGS.offensive:
+        list = fortune_lite.list_offensive_categories(CONN)
+    elif ARGS.all:
+        list = fortune_lite.list_categories(CONN)
+    else:
+        list = fortune_lite.list_appropriate_categories(CONN)
+    for cat in list:
+        print(cat)
+    run_exit();
+
+# Handle the case where all categories are to be given an equal chance:
+if ARGS.equal:
+    if ARGS.offensive:
+        cat = fortune_lite.select_random_offensive_category(CONN)
+    elif ARGS.all:
+        cat = fortune_lite.select_random_category(CONN)
+    else:
+        cat = fortune_lite.select_random_appropriate_category(CONN)
+    print(fortune_lite.select_random_from_category(CONN, cat))
+    run_exit()
+
+# Handle the case where all fortunes are to be given an equal chance:
+if ARGS.offensive:
+    print(fortune_lite.select_random_offensive(CONN))
+elif not ARGS.all:
+    print(fortune_lite.select_random_appropriate(CONN))
+else:
+    print(fortune_lite.select_random(CONN))
+run_exit()

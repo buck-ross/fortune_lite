@@ -1,0 +1,10 @@
+# Ignore compiled databases:
+**/*.db
+
+# Ignore Python Build Utilities:
+**/venv
+**/__pycache__
+*.egg-info
+*.pyc
+/build/
+/dist/
