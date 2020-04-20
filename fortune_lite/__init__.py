@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 """
 Provides the implementation of the fortune module.
 
-Copyright 2019 Haximilian
+Copyright 2019 Buckley Ross
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ def list_offensive_categories(conn):
     :param conn: A handle to the database connection.
     :return: A list of all categories.
     """
-    conn[1].execute("SELECT name FROM categories WHERE offensive = True")
+    conn[1].execute("SELECT name FROM categories WHERE offensive = 1")
     res = conn[1].fetchall()
     out = []
     for i in res:
@@ -98,7 +98,7 @@ def list_appropriate_categories(conn):
     :param conn: A handle to the database connection.
     :return: A list of all categories.
     """
-    conn[1].execute("SELECT name FROM categories WHERE offensive = False")
+    conn[1].execute("SELECT name FROM categories WHERE offensive = 0")
     res = conn[1].fetchall()
     out = []
     for i in res:
@@ -124,7 +124,7 @@ def select_random_offensive_category(conn):
     :param conn: A handle to the database connection.
     :return: A random category id.
     """
-    conn[1].execute("SELECT id FROM categories WHERE offensive = True ORDER "
+    conn[1].execute("SELECT id FROM categories WHERE offensive = 1 ORDER "
                     + "BY RANDOM() LIMIT 1")
     return conn[1].fetchall()[0][0]
 
@@ -136,7 +136,7 @@ def select_random_appropriate_category(conn):
     :param conn: A handle to the database connection.
     :return: A random category id.
     """
-    conn[1].execute("SELECT id FROM categories WHERE offensive = False ORDER "
+    conn[1].execute("SELECT id FROM categories WHERE offensive = 0 ORDER "
                     + "BY RANDOM() LIMIT 1")
     return conn[1].fetchall()[0][0]
 
@@ -174,7 +174,7 @@ def select_random_offensive(conn):
     """
     conn[1].execute("SELECT data FROM fortunes INNER JOIN categories ON "
                     + "fortunes.category = categories.id WHERE offensive = "
-                    + "True ORDER BY RANDOM() LIMIT 1")
+                    + "1 ORDER BY RANDOM() LIMIT 1")
     return conn[1].fetchall()[0][0]
 
 
@@ -187,5 +187,5 @@ def select_random_appropriate(conn):
     """
     conn[1].execute("SELECT data FROM fortunes INNER JOIN categories ON "
                     + "fortunes.category = categories.id WHERE offensive = "
-                    + "False ORDER BY RANDOM() LIMIT 1")
+                    + "0 ORDER BY RANDOM() LIMIT 1")
     return conn[1].fetchall()[0][0]

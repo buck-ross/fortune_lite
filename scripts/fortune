@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 """
 Define the official CLI interface to the fortune-lite python module
 
-Copyright 2019 Haximilian
+Copyright 2019 Buckley Ross
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

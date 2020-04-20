@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 """
 Packages Fotrune-Lite into a format more suitable for pip
 
-Copyright 2019 Haximilian
+Copyright 2019 Buckley Ross
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -93,13 +93,21 @@ CONN.commit()
 CONN.close()
 print(">> Changes committed")
 
+
+# Open the README:
+file = open("README.md")
+readme = file.read()
+file.close()
+
 # Setup the package:
 setup(name="fortune_lite",
-      version="1.0.0",
+      version="1.0.1",
       description="A Python implementation of fortune",
-      url="https://github.com/haximilian/fortune-lite",
-      author="Haximilian",
-      author_email="haximilian@gmail.com",
+      long_description=readme,
+      long_description_content_type="text/markdown",
+      url="https://github.com/buck-ross/fortune_lite",
+      author="Buckley Ross",
+      author_email="buckleyross42@gmail.com",
       license="Apache 2.0",
       packages=["fortune_lite"],
       package_data={'': ['fortune.db']},
